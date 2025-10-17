@@ -6,6 +6,19 @@ import CreateTaskModal from "../../components/CreateTaskModal";
 import { UserService, ManagerService } from "../../services";
 import { type taskStats, type ProjectResponse } from "../../types/api.types";
 
+import {
+  FiUsers,
+  FiFolder,
+  FiList,
+  FiClock,
+  FiPlus,
+  FiFileText,
+  FiEye,
+  FiUserPlus,
+  FiInbox,
+  // FiActivity, // This icon is imported but not used, kept for completeness
+} from "react-icons/fi";
+
 const ManagerDashboard = () => {
   const { user, isAuthenticated, setUser } = useAuth();
   const navigate = useNavigate();
@@ -22,13 +35,11 @@ const ManagerDashboard = () => {
       return;
     }
 
-    // Check if user is MANAGER
     if (user?.role !== "MANAGER") {
       navigate("/dashboard");
       return;
     }
 
-    // Fetch complete user details if needed
     const fetchUserDetails = async () => {
       try {
         const response = await UserService.getUserDetails();
@@ -77,35 +88,32 @@ const ManagerDashboard = () => {
     } catch (error) {
       console.error("Failed to fetch TaskStats:", error);
     }
-  }
+  };
 
   const fetchMembers = async () => {
-    const response = await ManagerService.totalMembersInAllProjects();
     try {
+      const response = await ManagerService.totalMembersInAllProjects();
       if (response.statusCode === 200) {
         setTotalMembers(response.data);
       }
     } catch (error) {
       console.error("Failed to fetch total members:", error);
     }
-  }
-
-  const handleProjectSuccess = () => {
-    fetchProjects();
   };
 
-  const handleTaskSuccess = () => {
-    // Optionally refresh task data
-  };
+  const handleProjectSuccess = () => fetchProjects();
+  const handleTaskSuccess = () => { };
 
   const handleAddMemberForEachProject = (projectId: number) => {
-    navigate(`/${projectId}/add-member`)
-  }
+    navigate(`/${projectId}/add-member`);
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-gray-600">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-lg text-blue-600 font-medium animate-pulse">
+          Loading your workspace...
+        </div>
       </div>
     );
   }
@@ -113,150 +121,105 @@ const ManagerDashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="flex-grow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           {/* Welcome Section */}
-          <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg shadow-md p-6 mb-6 text-white">
-            <h1 className="text-3xl font-bold mb-2">Manager Dashboard</h1>
-            <p className="text-purple-100">
-              Welcome back, <span className="font-medium">{user?.name || "Manager"}</span>
+          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 rounded-lg shadow-md p-8 text-white">
+            <h1 className="text-3xl font-bold mb-1 tracking-tight">Manager Dashboard</h1>
+            <p className="text-blue-100 text-lg">
+              Welcome back, <span className="font-semibold">{user?.name || "Manager"}</span>
             </p>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm mb-1">My Projects</p>
-                  <p className="text-3xl font-bold text-blue-600">{projects.length}</p>
-                </div>
-                <div className="bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm mb-1">Total Tasks</p>
-                  <p className="text-3xl font-bold text-green-600">{taskStats?.totalTasks}</p>
-                </div>
-                <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 text-sm mb-1">Team Members</p>
-                  <p className="text-3xl font-bold text-purple-600">{totalMembers}</p>
-                </div>
-                <div className="bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  <p className="text-gray-600 text-sm mb-1">In Progress</p>
-                  <div className="flex items-baseline space-x-2">
-                    <p className="text-3xl font-bold text-orange-600">
-                      {taskStats?.tasksInProgress}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      ({(taskStats?.inProgressPercentage ?? 0).toFixed(0)}%)
-                    </p>
-                  </div>
-                </div>
-                <div className="bg-orange-100 w-12 h-12 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-orange-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <StatsCard
+              label="My Projects"
+              value={projects.length}
+              color="blue"
+              Icon={<FiFolder className="w-6 h-6" />}
+            />
+            <StatsCard
+              label="Total Tasks"
+              value={taskStats?.totalTasks ?? 0}
+              color="sky"
+              Icon={<FiList className="w-6 h-6" />}
+            />
+            <StatsCard
+              label="Team Members"
+              value={totalMembers}
+              color="indigo"
+              Icon={<FiUsers className="w-6 h-6" />}
+            />
+            <StatsCard
+              label="In Progress"
+              value={taskStats?.tasksInProgress ?? 0}
+              color="emerald"
+              sub={`(${(taskStats?.inProgressPercentage ?? 0).toFixed(0)}%)`}
+              Icon={<FiClock className="w-6 h-6" />}
+            />
           </div>
 
           {/* Manager Quick Actions */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+          <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <button
+              <ActionButton
+                color="blue"
+                label="Create Project"
+                Icon={<FiPlus className="w-5 h-5" />}
                 onClick={() => setShowProjectModal(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-6 rounded-md transition flex items-center justify-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Create Project
-              </button>
-
-              <button
+              />
+              <ActionButton
+                color="sky"
+                label="Create Task"
+                Icon={<FiFileText className="w-5 h-5" />}
                 onClick={() => setShowTaskModal(true)}
-                className="bg-green-600 hover:bg-green-700 text-white font-medium py-4 px-6 rounded-md transition flex items-center justify-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-                Create Task
-              </button>
-
-              <button
+              />
+              <ActionButton
+                color="indigo"
+                label="View All Projects"
+                Icon={<FiEye className="w-5 h-5" />}
                 onClick={() => navigate("/projects")}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-4 px-6 rounded-md transition flex items-center justify-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                View All Projects
-              </button>
+              />
             </div>
           </div>
 
           {/* Projects List */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">My Projects</h2>
+          <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">My Projects</h2>
             {projects.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+              <div className="text-center py-10 text-gray-500">
+                <FiInbox className="w-16 h-16 mx-auto mb-4 text-gray-300" />
                 <p>No projects yet. Create your first project!</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {projects.map((project) => (
-                  <div key={project.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
-                    <h3 className="font-semibold text-gray-900 mb-2">{project.name}</h3>
-                    <p className="text-sm text-gray-600 mb-3">{project.description}</p>
+                  <div
+                    key={project.id}
+                    className="border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow duration-200"
+                  >
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {project.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                      {project.description}
+                    </p>
                     <div className="flex gap-2">
-                      <button className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded hover:bg-blue-100 transition">
+                      {/* Assuming this view details button navigates to the project page */}
+                      <button
+                        onClick={() => navigate(`/projects/${project.id}`)}
+                        className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded hover:bg-blue-100 transition flex items-center gap-2">
+                        <FiEye className="w-4 h-4" />
                         View Details
                       </button>
-                      <button className="text-xs bg-green-50 text-green-600 px-3 py-1 rounded hover:bg-green-100 transition"
-                        onClick={() => handleAddMemberForEachProject(project.id)}
+                      <button
+                        onClick={() =>
+                          handleAddMemberForEachProject(project.id)
+                        }
+                        className="text-xs bg-indigo-50 text-indigo-600 px-3 py-1 rounded hover:bg-indigo-100 transition flex items-center gap-2"
                       >
+                        <FiUserPlus className="w-4 h-4" />
                         Add Members
                       </button>
                     </div>
@@ -267,20 +230,14 @@ const ManagerDashboard = () => {
           </div>
 
           {/* Manager Profile */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Manager Profile</h2>
+          <div className="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Manager Profile</h2>
             <div className="space-y-3">
-              <div className="flex items-center">
-                <span className="text-gray-600 w-32">Name:</span>
-                <span className="font-medium text-gray-900">{user?.name || "N/A"}</span>
-              </div>
-              <div className="flex items-center">
-                <span className="text-gray-600 w-32">Email:</span>
-                <span className="font-medium text-gray-900">{user?.email || "N/A"}</span>
-              </div>
+              <ProfileItem label="Name" value={user?.name || "N/A"} />
+              <ProfileItem label="Email" value={user?.email || "N/A"} />
               <div className="flex items-center">
                 <span className="text-gray-600 w-32">Role:</span>
-                <span className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                <span className="inline-block bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
                   Manager
                 </span>
               </div>
@@ -289,14 +246,12 @@ const ManagerDashboard = () => {
         </div>
       </main>
 
-      {/* Create Project Modal */}
+      {/* Modals */}
       <CreateProjectModal
         isOpen={showProjectModal}
         onClose={() => setShowProjectModal(false)}
         onSuccess={handleProjectSuccess}
       />
-
-      {/* Create Task Modal */}
       <CreateTaskModal
         isOpen={showTaskModal}
         onClose={() => setShowTaskModal(false)}
@@ -304,6 +259,108 @@ const ManagerDashboard = () => {
       />
     </div>
   );
+};
+
+/* ---------- Small Styled Subcomponents ---------- */
+
+const StatsCard = ({ label, value, color, sub, Icon }: any) => (
+  <div className="bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 p-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-gray-600 text-sm font-medium mb-1">{label}</p>
+        <div className="flex items-baseline space-x-2">
+          <p className={`text-3xl font-bold ${colorClass(color)}`}>{value}</p>
+          {sub && <p className="text-sm text-gray-500">{sub}</p>}
+        </div>
+      </div>
+      <div className={`${bgColorClass(color)} w-12 h-12 rounded-full flex items-center justify-center`}>
+        {/* Using colorClass for the icon color */}
+        <div className={`${colorClass(color)}`}>{Icon}</div>
+      </div>
+    </div>
+  </div>
+);
+
+const ActionButton = ({ color, label, Icon, onClick }: any) => (
+  <button
+    onClick={onClick}
+    // Updated to use buttonBgColorClass
+    className={`${buttonBgColorClass(color)} hover:${bgColorClassHover(color)} text-white font-medium py-3 px-6 rounded-md transition flex items-center justify-center gap-2 shadow-sm hover:shadow-md`}
+  >
+    {Icon}
+    {label}
+  </button>
+);
+
+const ProfileItem = ({ label, value }: any) => (
+  <div className="flex items-center">
+    <span className="text-gray-600 w-32">{label}:</span>
+    <span className="font-medium text-gray-900">{value}</span>
+  </div>
+);
+
+/* ---------- Utility functions for tailwind color classes (simple mapping) ---------- */
+
+const colorClass = (color: string) => {
+  switch (color) {
+    case "blue":
+      return "text-blue-600";
+    case "indigo":
+      return "text-indigo-600";
+    case "sky":
+      return "text-sky-600";
+    case "emerald":
+      return "text-emerald-600";
+    default:
+      return "text-gray-800";
+  }
+};
+
+// Background color for StatsCard icons/circles
+const bgColorClass = (color: string) => {
+  switch (color) {
+    case "blue":
+      return "bg-blue-50";
+    case "indigo":
+      return "bg-indigo-50";
+    case "sky":
+      return "bg-sky-50";
+    case "emerald":
+      return "bg-emerald-50";
+    default:
+      return "bg-gray-100";
+  }
+};
+
+// Background color for Action Buttons (renamed from the second bgColorClass)
+const buttonBgColorClass = (color: string) => {
+  switch (color) {
+    case "blue":
+      return "bg-blue-600";
+    case "indigo":
+      return "bg-indigo-600";
+    case "sky":
+      return "bg-sky-600";
+    case "emerald":
+      return "bg-emerald-600";
+    default:
+      return "bg-gray-600";
+  }
+};
+
+const bgColorClassHover = (color: string) => {
+  switch (color) {
+    case "blue":
+      return "bg-blue-700";
+    case "indigo":
+      return "bg-indigo-700";
+    case "sky":
+      return "bg-sky-700";
+    case "emerald":
+      return "bg-emerald-700";
+    default:
+      return "bg-gray-700";
+  }
 };
 
 export default ManagerDashboard;

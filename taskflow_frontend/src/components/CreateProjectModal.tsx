@@ -37,7 +37,12 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }: CreateProjectModalPr
         setFormData({ name: "", description: "" });
         onSuccess();
         onClose();
-        navigate(`/${response.data.id}/add-member`)
+        navigate(`/${response.data.id}/add-member`, {
+          state: {
+            title: response.data.name,
+            description: response.data.description
+          }
+        })
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to create project. Please try again.");

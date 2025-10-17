@@ -3,6 +3,7 @@ import debounce from "lodash.debounce";
 import { UserService, ManagerService } from "../services";
 import type { AuthResponse } from "../types/api.types";
 import { useLocation, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 // Sample project data
 type LocationState = {
@@ -91,12 +92,9 @@ const AddMember = () => {
       const response = await ManagerService.addMembers(projectId, { memberIds });
 
       if (response.statusCode === 200 || response.statusCode === 201) {
-        const selectedMemberNames = selectedMemberDetails
-          .map((member) => member.name)
-          .join(", ");
-
-        alert(`✅ Success!\n\nAdded ${selectedMembers.length} member(s) to project:\n${selectedMemberNames}\n\nMessage: ${response.message || 'Members added successfully'}`);
-
+        toast.success("Members added successfully", {
+          id: "#member-added"
+        });
         // Clear selections after successful add
         setSelectedMembers([]);
         setSelectedMemberDetails([]);

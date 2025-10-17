@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/UserContext";
 import AuthService from "../services/AuthService";
+import toast from "react-hot-toast";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -29,7 +30,9 @@ const AuthPage = () => {
     try {
       const response = await AuthService.login(formData);
       if (response.statusCode === 200) {
-        // Store user in context
+        toast.success(`${response.data.name} logged in successfully!`, {
+          id: "login-toast",
+        });
         setUser(response.data);
         // Redirect based on role or to dashboard
         navigate("/dashboard");

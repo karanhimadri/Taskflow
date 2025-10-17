@@ -7,7 +7,8 @@ function Dashboard() {
   const { user } = useAuth(); // assuming user has a "role" property
 
   if (!user) return <p className="text-red-600 font-semibold text-center">Unauthorized</p>;
-  
+
+
   switch (user.role) {
     case "ADMIN":
       return <AdminDashboard />;
