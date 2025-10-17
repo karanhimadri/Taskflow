@@ -2,8 +2,10 @@ package com.example.taskflow.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class RegisterRequest {
     
     @NotBlank(message = "Name is required")
